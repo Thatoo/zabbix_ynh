@@ -92,8 +92,6 @@ ram.runtime = "200M"
         "php8.3-bcmath",
         "php8.3-ctype",
         "php8.3-xml",
-        "php8.3-session",
-        "php8.3-net-socket",
         "php8.3-mbstring",
         "php8.3-gettext",
         "php8.3-curl",
