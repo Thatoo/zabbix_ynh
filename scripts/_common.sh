@@ -106,7 +106,7 @@ import_template () {
 	if [ $? -eq 0 ]
 	then
 		sid=$(curl $curlOptions \
-						"$zabbixFullpath/conf.import.php?rules_preset=template" \
+						"$zabbixFullpath/zabbix.php?action=popup.import" \
 						| grep -Po 'name="sid" value="\K([a-z0-9]{16})(?=")' )
 
 		importState=$(curl $curlOptions \
@@ -134,7 +134,7 @@ import_template () {
 						--form "backurl=templates.php" \
 						--form "form_refresh=1" \
 						--form "sid=${sid}" \ \
-						"${zabbixFullpath}/conf.import.php?rules_preset=template" \
+						"${zabbixFullpath}/zabbix.php?action=popup.import" \
 						| grep -c "Imported successfully")
 
 		if [ "$importState" -eq "1" ]
