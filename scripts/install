@@ -33,7 +33,8 @@ $mysqlconn -e "UPDATE \`config\` SET \`http_auth_enabled\` = '1', \`http_login_f
 #admin creation
 surname=$(ynh_user_get_info "$admin" lastname)
 name=$(ynh_user_get_info "$admin" firstname)
-password=$(ynh_user_get_info "$admin" password)
+password=$(ynh_user_get_info --username=$admin --key=password)
+echo $password
 hash_password=$(echo -n $password | php -r 'echo(password_hash(file_get_contents("php://stdin"), PASSWORD_BCRYPT)."\n");')
 
 $mysqlconn -e "INSERT INTO \`users\` (\`userid\`,\`username\`, \`name\`, \`surname\`, \`passwd\`, \`url\`, \`autologin\`, \`autologout\`, \`lang\`, \`refresh\`, \`theme\`, \`attempt_failed\`, \`attempt_ip\`, \`attempt_clock\`, \`rows_per_page\`, \`timezone\`, \`roleid\`) VALUES (3,'$admin', '$name', '$password', '$hash_password', '', 0, '0', '$language', '30s', 'default', 0, '', 0, 50, 'default', 3);"
