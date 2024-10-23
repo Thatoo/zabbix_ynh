@@ -33,7 +33,8 @@ $mysqlconn -e "UPDATE \`config\` SET \`http_auth_enabled\` = '1', \`http_login_f
 #admin creation
 surname=$(ynh_user_get_info "$admin" lastname)
 name=$(ynh_user_get_info "$admin" firstname)
-password=$(ynh_user_get_info --username=$admin --key=password)
+#password=$(ynh_user_get_info --username=$admin --key=password)
+password=TestPassword1234
 echo $password
 hash_password=$(echo -n $password | php -r 'echo(password_hash(file_get_contents("php://stdin"), PASSWORD_BCRYPT)."\n");')
 
