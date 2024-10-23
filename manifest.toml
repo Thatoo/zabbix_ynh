@@ -52,6 +52,13 @@ ram.runtime = "200M"
     [install.admin]
     type = "user"
 
+    [install.password]
+    # this is a generic question - ask strings are automatically handled by YunoHost's core
+    # Note that user-provided passwords questions are not automatically saved as setting
+    help.en = "Choose a password for the administrator user, who will then be able to manage zabbix."
+    help.fr = "Choisissez le mot de passe de l'utilisateur administrator qui vous permettra ensuite de gérer zabbix."
+    type = "password"
+
 [resources]
     [resources.system_user]
 
