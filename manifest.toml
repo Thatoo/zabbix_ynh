@@ -52,6 +52,7 @@ ram.runtime = "200M"
     [install.admin]
     type = "user"
 
+# Untill LDAP is implemented.
     [install.password]
     # this is a generic question - ask strings are automatically handled by YunoHost's core
     # Note that user-provided passwords questions are not automatically saved as setting
