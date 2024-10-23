@@ -33,10 +33,13 @@ $mysqlconn -e "UPDATE \`config\` SET \`http_auth_enabled\` = '1', \`http_login_f
 #admin creation
 surname=$(ynh_user_get_info "$admin" lastname)
 name=$(ynh_user_get_info "$admin" firstname)
+password=$(ynh_user_get_info "$admin" password)
+hash_password=$(echo -n $password | php -r 'echo(password_hash(file_get_contents("php://stdin"), PASSWORD_BCRYPT)."\n");')
 
-#$mysqlconn -e "INSERT INTO \`users\` (\`userid\`,\`username\`, \`name\`, \`surname\`, \`passwd\`, \`url\`, \`autologin\`, \`autologout\`, \`lang\`, \`refresh\`, \`theme\`, \`attempt_failed\`, \`attempt_ip\`, \`attempt_clock\`, \`rows_per_page\`) VALUES (3,'$admin', '$admin', '$admin', '5fce1b3e34b520afeffb37ce08c7cd66', '', 0, '0', '$language', '30s', 3, 'default', 0, '', 0, 50);"
-#$mysqlconn -e "INSERT INTO \`users_groups\` (\`id\`, \`usrgrpid\`, \`userid\`) VALUES (5, 7, 3);"
+$mysqlconn -e "INSERT INTO \`users\` (\`userid\`,\`username\`, \`name\`, \`surname\`, \`passwd\`, \`url\`, \`autologin\`, \`autologout\`, \`lang\`, \`refresh\`, \`theme\`, \`attempt_failed\`, \`attempt_ip\`, \`attempt_clock\`, \`rows_per_page\`, \`timezone\`, \`roleid\`) VALUES (3,'$admin', '$name', '$surname', '$hash_password', '', 0, '0', '$language', '30s', 'default', 0, '', 0, 50, 'default', 3);"
+$mysqlconn -e "INSERT INTO \`users_groups\` (\`id\`, \`usrgrpid\`, \`userid\`) VALUES (7, 7, 3);"
 
+# Should be replaced by ldap thanks to curl and POST
 #users creation in zabbix database
 #i=4
 #for user in $(ynh_user_list);
@@ -45,12 +48,12 @@ name=$(ynh_user_get_info "$admin" firstname)
 #	then
 #		surname=$(ynh_user_get_info --username="$user" --key=lastname)
 #		name=$(ynh_user_get_info --username="$user" --key=firstname)
-#		$mysqlconn -e "INSERT INTO \`users\` (\`userid\`, \`alias\`, \`name\`, \`surname\`, \`passwd\`, \`url\`, \`autologin\`, \`autologout\`, \`lang\`, \`refresh\`, \`type\`, \`theme\`, \`attempt_failed\`, \`attempt_ip\`, \`attempt_clock\`, \`rows_per_page\`) VALUES ($i,'$user', '$name', '$surname', '5fce1b3e34b520afeffb37ce08c7cd66', '', 0, '0', '$language', '30s', 'default', 0, '', 0, 50);"
+#		$mysqlconn -e "INSERT INTO \`users\` (\`userid\`, \`alias\`, \`name\`, \`surname\`, \`passwd\`, \`url\`, \`autologin\`, \`autologout\`, \`lang\`, \`refresh\`, \`type\`, \`theme\`, \`attempt_failed\`, \`attempt_ip\`, \`attempt_clock\`, \`rows_per_page\`, \`timezone\`, \`roleid\`) VALUES ($i,'$user', '$name', '$surname', '\$2y\$10\$92nDno4n0Zm7Ej7Jfsz8WukBfgSS/U0QkIuu8WkJPihXBb2A1UrEK', '', 0, '0', '$language', '30s', 'default', 0, '', 0, 50, 'default', 1);"
 #		i=$((i+1))
 #	fi
 #done
 
-#disable_guest_user
+disable_guest_user
 
 set_mediatype_default_yunohost
 
@@ -101,7 +104,7 @@ update_initZabbixConf
 
 #link_template
 
-#disable_admin_user
+disable_admin_user
 
 #=================================================
 # START SYSTEMD SERVICE
