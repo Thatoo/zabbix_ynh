@@ -27,7 +27,7 @@ zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | $mysqlconn
 
 convert_ZabbixDB
 
-#sso integration
+#sso integration, works only if zabbix is installed on the same domaine than yunohost
 $mysqlconn -e "UPDATE \`config\` SET \`http_auth_enabled\` = '1', \`http_login_form\` = '1' WHERE \`config\`.\`configid\` = 1;"
 
 #admin creation

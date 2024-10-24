@@ -97,45 +97,173 @@ import_template () {
  
 	curlOptions="--noproxy $domain -k -s --cookie cookiejar.txt --cookie-jar cookiejar.txt --resolve $domain:443:127.0.0.1"
 
-	curl -L $curlOptions \
-					--form "enter=Sign+in" \
-					--form "name=Admin" \
-					--form "password=zabbix" \
-					"$zabbixFullpath/index.php"
+	if [ $? -eq 0 ]; then
+# 		sid=$(curl $curlOptions \
+# 						"$zabbixFullpath/conf.import.php?rules_preset=template" \
+# 						| grep -Po 'name="sid" value="\K([a-z0-9]{16})(?=")' )
 
-	if [ $? -eq 0 ]
-	then
-		sid=$(curl $curlOptions \
-						"$zabbixFullpath/conf.import.php?rules_preset=template" \
-						| grep -Po 'name="sid" value="\K([a-z0-9]{16})(?=")' )
+# 		importState=$(curl $curlOptions \
+# 						--form "config=1" \
+# 						--form "import_file=@$localpath" \
+# 						--form "rules[groups][createMissing]=1" \
+# 						--form "rules[templates][updateExisting]=1" \
+# 						--form "rules[templates][createMissing]=1" \
+# 						--form "rules[templateScreens][updateExisting]=1" \
+# 						--form "rules[templateScreens][createMissing]=1" \
+# 						--form "rules[templateLinkage][createMissing]=1" \
+# 						--form "rules[applications][createMissing]=1" \
+# 						--form "rules[items][updateExisting]=1" \
+# 						--form "rules[items][createMissing]=1" \
+# 						--form "rules[discoveryRules][updateExisting]=1" \
+# 						--form "rules[discoveryRules][createMissing]=1" \
+# 						--form "rules[triggers][updateExisting]=1" \
+# 						--form "rules[triggers][createMissing]=1" \
+# 						--form "rules[graphs][updateExisting]=1" \
+# 						--form "rules[graphs][createMissing]=1" \
+# 						--form "rules[httptests][updateExisting]=1" \
+# 						--form "rules[httptests][createMissing]=1" \
+# 						--form "rules[valueMaps][createMissing]=1" \
+# 						--form "import=Import" \
+# 						--form "backurl=templates.php" \
+# 						--form "form_refresh=1" \
+# 						--form "sid=${sid}" \ \
+# 						"${zabbixFullpath}/conf.import.php?rules_preset=template" \
+# 						| grep -c "Imported successfully")
+
+
+		_csrf_token=$(curl $curlOptions "$zabbixFullpath/zabbix.php?action=template.list" | \
+						grep -B 10 -A 10 popup.import | grep -Po '\[CSRF_TOKEN_NAME\]: "[A-Za-z0-9]+"' | \
+						grep -Po '"[A-Za-z0-9]+"' | grep -Po '[A-Za-z0-9]+')
+
 
 		importState=$(curl $curlOptions \
-						--form "config=1" \
-						--form "import_file=@$localpath" \
-						--form "rules[groups][createMissing]=1" \
-						--form "rules[templates][updateExisting]=1" \
-						--form "rules[templates][createMissing]=1" \
-						--form "rules[templateScreens][updateExisting]=1" \
-						--form "rules[templateScreens][createMissing]=1" \
-						--form "rules[templateLinkage][createMissing]=1" \
-						--form "rules[applications][createMissing]=1" \
-						--form "rules[items][updateExisting]=1" \
-						--form "rules[items][createMissing]=1" \
-						--form "rules[discoveryRules][updateExisting]=1" \
-						--form "rules[discoveryRules][createMissing]=1" \
-						--form "rules[triggers][updateExisting]=1" \
-						--form "rules[triggers][createMissing]=1" \
-						--form "rules[graphs][updateExisting]=1" \
-						--form "rules[graphs][createMissing]=1" \
-						--form "rules[httptests][updateExisting]=1" \
-						--form "rules[httptests][createMissing]=1" \
-						--form "rules[valueMaps][createMissing]=1" \
-						--form "import=Import" \
-						--form "backurl=templates.php" \
-						--form "form_refresh=1" \
-						--form "sid=${sid}" \ \
-						"${zabbixFullpath}/conf.import.php?rules_preset=template" \
-						| grep -c "Imported successfully")
+				--request POST \
+				"$zabbixFullpath/zabbix.php?action=popup.import" \
+				--header "content-type: multipart/form-data" \
+				--form "_csrf_token=$_csrf_token" \
+				--form "import=1" \
+				--form "rules_preset=template" \
+				--form "import_file=@$localpath" \
+				--form "update_all=1" \
+				--form "create_all=1" \
+				--form "delete_all=1" \
+				--form "rules[template_groups][updateExisting]=1" \
+				--form "rules[template_groups][createMissing]=1" \
+				--form "rules[host_groups][updateExisting]=1" \
+				--form "rules[host_groups][createMissing]=1" \
+				--form "rules[templates][updateExisting]=1" \
+				--form "rules[templates][createMissing]=1" \
+				--form "rules[valueMaps][updateExisting]=1" \
+				--form "rules[valueMaps][createMissing]=1" \
+				--form "rules[valueMaps][deleteMissing]=1" \
+				--form "rules[templateDashboards][updateExisting]=1" \
+				--form "rules[templateDashboards][createMissing]=1" \
+				--form "rules[templateDashboards][deleteMissing]=1" \
+				--form "rules[templateLinkage][createMissing]=1" \
+				--form "rules[templateLinkage][deleteMissing]=1" \
+				--form "rules[items][updateExisting]=1" \
+				--form "rules[items][createMissing]=1" \
+				--form "rules[items][deleteMissing]=1" \
+				--form "rules[discoveryRules][updateExisting]=1" \
+				--form "rules[discoveryRules][createMissing]=1" \
+				--form "rules[discoveryRules][deleteMissing]=1" \
+				--form "rules[triggers][updateExisting]=1" \
+				--form "rules[triggers][createMissing]=1" \
+				--form "rules[triggers][deleteMissing]=1" \
+				--form "rules[graphs][updateExisting]=1" \
+				--form "rules[graphs][createMissing]=1" \
+				--form "rules[graphs][deleteMissing]=1" \
+				--form "rules[httptests][updateExisting]=1" \
+				--form "rules[httptests][createMissing]=1" \
+				--form "rules[httptests][deleteMissing]=1" \
+				| grep -c "success")
+
+
+		# auth=$(curl -L $curlOptions --request POST \
+		# 	--url "$zabbixFullpath/api_jsonrpc.php" \
+		# 	--header 'Content-Type: application/json-rpc' \
+		# 	--data '{"jsonrpc":"2.0","method":"user.login","params":{"username":"Admin","password":"zabbix"},"id":1}' | \
+		# 	jq -r .result
+		# )
+
+		# template_xml=$(sudo cat $localpath)
+
+		# importState=$(curl -L $curlOptions --request POST \
+		# 	--url "$zabbixFullpath/api_jsonrpc.php" \
+		# 	--header "Authorization: Bearer $auth" \
+		# 	--header 'Content-Type: application/json-rpc' \
+		# 	--data '{
+		# 		"jsonrpc": "2.0",
+		# 		"method": "configuration.import",
+		# 		"params": {
+		# 			"format": "xml",
+		# 			"rules": {
+		# 				"template_groups": {
+		# 					"createMissing": true,
+		# 					"updateExisting": true
+		# 				},
+		# 				"host_groups": {
+		# 					"createMissing": true,
+		# 					"updateExisting": true
+		# 				},
+		# 				"templates": {
+		# 					"createMissing": true,
+		# 					"updateExisting": true
+		# 				},
+		# 				"valueMaps": {
+		# 					"createMissing": true,
+		# 					"deleteMissing": true,
+		# 					"updateExisting": true
+		# 				},
+		# 				"templateDashboards": {
+		# 					"createMissing": true,
+		# 					"deleteMissing": true,
+		# 					"updateExisting": true
+		# 				},
+		# 				"templateLinkage": {
+		# 					"createMissing": true,
+		# 					"deleteMissing": true
+		# 				},
+		# 				"items": {
+		# 					"createMissing": true,
+		# 					"updateExisting": true,
+		# 					"deleteMissing": true
+		# 				},
+		# 				"discoveryRules": {
+		# 					"createMissing": true,
+		# 					"updateExisting": true,
+		# 					"deleteMissing": true
+		# 				},
+		# 				"triggers": {
+		# 					"createMissing": true,
+		# 					"updateExisting": true,
+		# 					"deleteMissing": true
+		# 				},
+		# 				"graphs": {
+		# 					"createMissing": true,
+		# 					"updateExisting": true,
+		# 					"deleteMissing": true
+		# 				},
+		# 				"httptests": {
+		# 					"createMissing": true,
+		# 					"updateExisting": true,
+		# 					"deleteMissing": true
+		# 				},
+		# 			},
+		# 			"source": "'$template_xml'"
+		# 		},
+		# 		"id": 1
+		# 	}' | \
+		# 	jq -r .result
+		# )
+
+		# importState=$(curl -L $curlOptions --request POST \
+		# 	--url "$zabbixFullpath/api_jsonrpc.php" \
+		# 	--header "Authorization: Bearer $auth" \
+		# 	--header 'Content-Type: application/json-rpc' \
+		# 	--data @$localpath | \
+		# 	jq -r .result
+		# )
 
 		if [ "$importState" -eq "1" ]
 		then
