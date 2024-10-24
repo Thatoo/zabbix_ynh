@@ -98,52 +98,53 @@ import_template () {
 	curlOptions="--noproxy $domain -k -s --cookie cookiejar.txt --cookie-jar cookiejar.txt --resolve $domain:443:127.0.0.1"
 
 	if [ $? -eq 0 ]; then
-		_csrf_token=$(curl $curlOptions "$zabbixFullpath/zabbix.php?action=template.list" | \
-						grep -B 10 -A 10 popup.import | grep -Po '\[CSRF_TOKEN_NAME\]: "[A-Za-z0-9]+"' | \
-						grep -Po '"[A-Za-z0-9]+"' | grep -Po '[A-Za-z0-9]+')
-
+		_csrf_token=$(curl $curlOptions "$zabbixFullpath/zabbix.php?action=template.list" | grep -B 10 -A 10 popup.import)
+		_csrf_token=$(echo _csrf_token | grep -Po '\[CSRF_TOKEN_NAME\]: "[A-Za-z0-9]+"')
+		_csrf_token=$(echo _csrf_token | grep -Po '"[A-Za-z0-9]+"')
+		_csrf_token=$(echo _csrf_token | grep -Po '[A-Za-z0-9]+')
+		echo $_csrf_token
 
 		importState=$(curl $curlOptions \
-				--request POST \
-				"$zabbixFullpath/zabbix.php?action=popup.import" \
-				--header "content-type: multipart/form-data" \
-				--form "_csrf_token=$_csrf_token" \
-				--form "import=1" \
-				--form "rules_preset=template" \
-				--form "import_file=@$localpath" \
-				--form "update_all=1" \
-				--form "create_all=1" \
-				--form "delete_all=1" \
-				--form "rules[template_groups][updateExisting]=1" \
-				--form "rules[template_groups][createMissing]=1" \
-				--form "rules[host_groups][updateExisting]=1" \
-				--form "rules[host_groups][createMissing]=1" \
-				--form "rules[templates][updateExisting]=1" \
-				--form "rules[templates][createMissing]=1" \
-				--form "rules[valueMaps][updateExisting]=1" \
-				--form "rules[valueMaps][createMissing]=1" \
-				--form "rules[valueMaps][deleteMissing]=1" \
-				--form "rules[templateDashboards][updateExisting]=1" \
-				--form "rules[templateDashboards][createMissing]=1" \
-				--form "rules[templateDashboards][deleteMissing]=1" \
-				--form "rules[templateLinkage][createMissing]=1" \
-				--form "rules[templateLinkage][deleteMissing]=1" \
-				--form "rules[items][updateExisting]=1" \
-				--form "rules[items][createMissing]=1" \
-				--form "rules[items][deleteMissing]=1" \
-				--form "rules[discoveryRules][updateExisting]=1" \
-				--form "rules[discoveryRules][createMissing]=1" \
-				--form "rules[discoveryRules][deleteMissing]=1" \
-				--form "rules[triggers][updateExisting]=1" \
-				--form "rules[triggers][createMissing]=1" \
-				--form "rules[triggers][deleteMissing]=1" \
-				--form "rules[graphs][updateExisting]=1" \
-				--form "rules[graphs][createMissing]=1" \
-				--form "rules[graphs][deleteMissing]=1" \
-				--form "rules[httptests][updateExisting]=1" \
-				--form "rules[httptests][createMissing]=1" \
-				--form "rules[httptests][deleteMissing]=1" \
-				| grep -c "success")
+			--request POST \
+			"$zabbixFullpath/zabbix.php?action=popup.import" \
+			--header "content-type: multipart/form-data" \
+			--form "_csrf_token=$_csrf_token" \
+			--form "import=1" \
+			--form "rules_preset=template" \
+			--form "import_file=@$localpath" \
+			--form "update_all=1" \
+			--form "create_all=1" \
+			--form "delete_all=1" \
+			--form "rules[template_groups][updateExisting]=1" \
+			--form "rules[template_groups][createMissing]=1" \
+			--form "rules[host_groups][updateExisting]=1" \
+			--form "rules[host_groups][createMissing]=1" \
+			--form "rules[templates][updateExisting]=1" \
+			--form "rules[templates][createMissing]=1" \
+			--form "rules[valueMaps][updateExisting]=1" \
+			--form "rules[valueMaps][createMissing]=1" \
+			--form "rules[valueMaps][deleteMissing]=1" \
+			--form "rules[templateDashboards][updateExisting]=1" \
+			--form "rules[templateDashboards][createMissing]=1" \
+			--form "rules[templateDashboards][deleteMissing]=1" \
+			--form "rules[templateLinkage][createMissing]=1" \
+			--form "rules[templateLinkage][deleteMissing]=1" \
+			--form "rules[items][updateExisting]=1" \
+			--form "rules[items][createMissing]=1" \
+			--form "rules[items][deleteMissing]=1" \
+			--form "rules[discoveryRules][updateExisting]=1" \
+			--form "rules[discoveryRules][createMissing]=1" \
+			--form "rules[discoveryRules][deleteMissing]=1" \
+			--form "rules[triggers][updateExisting]=1" \
+			--form "rules[triggers][createMissing]=1" \
+			--form "rules[triggers][deleteMissing]=1" \
+			--form "rules[graphs][updateExisting]=1" \
+			--form "rules[graphs][createMissing]=1" \
+			--form "rules[graphs][deleteMissing]=1" \
+			--form "rules[httptests][updateExisting]=1" \
+			--form "rules[httptests][createMissing]=1" \
+			--form "rules[httptests][deleteMissing]=1" \
+			| grep -c "success")
 		if [ "$importState" -eq "1" ]
 		then
 			ynh_print_info --message="YunoHost template imported !"
