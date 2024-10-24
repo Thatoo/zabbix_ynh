@@ -99,7 +99,7 @@ update_initZabbixConf
 #=================================================
 # SETUP APPLICATION WITH CURL
 #=================================================
-#ynh_script_progression --message="Setting up application with CURL..."
+ynh_script_progression --message="Setting up application with CURL..."
 
 import_template
 
