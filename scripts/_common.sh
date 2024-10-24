@@ -99,9 +99,9 @@ import_template () {
 
 	if [ $? -eq 0 ]; then
 		_csrf_token=$(curl $curlOptions "$zabbixFullpath/zabbix.php?action=template.list" | grep -B 10 -A 10 popup.import)
-		_csrf_token=$(echo _csrf_token | grep -Po '\[CSRF_TOKEN_NAME\]: "[A-Za-z0-9]+"')
-		_csrf_token=$(echo _csrf_token | grep -Po '"[A-Za-z0-9]+"')
-		_csrf_token=$(echo _csrf_token | grep -Po '[A-Za-z0-9]+')
+		_csrf_token=$(echo $_csrf_token | grep -Po '\[CSRF_TOKEN_NAME\]: "[A-Za-z0-9]+"')
+		_csrf_token=$(echo $_csrf_token | grep -Po '"[A-Za-z0-9]+"')
+		_csrf_token=$(echo $_csrf_token | grep -Po '[A-Za-z0-9]+')
 		echo $_csrf_token
 
 		importState=$(curl $curlOptions \
